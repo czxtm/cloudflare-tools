@@ -66,6 +66,7 @@ export default async function cloudflareVitePlugin(
   options: PluginOptions = {},
 ): Promise<Array<vite.Plugin>> {
   const environmentEntries = new Map<string, string>();
+  const isRolldownVite = "rolldownVersion" in vite;     
   return [
     {
       name: "distilled:vite",
@@ -92,9 +93,9 @@ export default async function cloudflareVitePlugin(
                 target: TARGET,
                 emitAssets: true,
                 copyPublicDir: false,
-                rolldownOptions: {
-                  preserveEntrySignatures: "strict",
-                },
+                ...(isRolldownVite
+                  ? { rolldownOptions: { preserveEntrySignatures: "strict" } }                                              
+                  : { rollupOptions:  { preserveEntrySignatures: "strict" } }),      
               },
               optimizeDeps: {
                 noDiscovery: false,
